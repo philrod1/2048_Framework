@@ -1,0 +1,6 @@
+100 Mono 5 128
+Mean:               96476.2
+Standard deviation: 52301.00694212302
+Highest score:      342768
+Highest tile:       16384
+Tile counts:        |0|0|0|0|0|0|0|0|1|2|12|47|37|1|0|
