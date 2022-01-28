@@ -1,5 +1,6 @@
 package model;
 
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
 /*
@@ -129,20 +130,24 @@ public class FastState extends AbstractState {
         return (int) (board & 0xf);
     }
     
-    private static long addRandomTile(long board) {
+    private long addRandomTile(long board) {
         long tile = (Math.random() < 0.9) ? 1 : 2;
         int index = (int)(Math.random() * countEmpty(board));
         long tmp = board;
+        int count = 0;
         while (true) {
             while ((tmp & 0xf) != 0) {
                 tmp >>= 4;
                 tile <<= 4;
+                ++count;
             }
             if (index == 0) break;
             --index;
             tmp >>= 4;
             tile <<= 4;
+            ++count;
         }
+        newTilePosition = new Point(count % 4,count / 4);
         return board | tile;
     }
 
@@ -266,6 +271,6 @@ public class FastState extends AbstractState {
                    + scoreTable[newBoard[2]]
                    + scoreTable[newBoard[3]];
 
-        return score2/* - score1*/;
+        return score2 - score1;
     }
 }

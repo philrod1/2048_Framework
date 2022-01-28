@@ -12,7 +12,7 @@ import javax.swing.JFrame;
 
 import data.NTupleNetwork;
 import model.AbstractState.MOVE;
-import model.FastState;
+import model.BinaryState;
 import model.State;
 import data.CircularArray;
 import data.Plot;
@@ -28,8 +28,8 @@ public class SimpleLearn3 implements Evaluator {
 //  private final String name = "beast-mode2.bin";
 //	private final String description = "Beast Mode 2 Network";
 
-  private final String name = "beast-mode.bin";
-	private final String description = "Beast Mode Network";
+//  private final String name = "matsuzaki.bin";
+//	private final String description = "Beast Mode Network";
 
 //	private final String name = "simple-side.bin";
 //	private final String description = "Simple Side Network";
@@ -87,22 +87,22 @@ public class SimpleLearn3 implements Evaluator {
 //				".**.",
 //		}
 //	};
-//	private final String name = "score-test-rollout.bin";
-//	private final String description = "Score Test Network Rollout";
-// 	private final String[][] shapes = new String[][] {
-//		{
-//				"****",
-//				"....",
-//				"....",
-//				"...."
-//		},
-//		{
-//				"....",
-//				"****",
-//				"....",
-//				"...."
-//		}
-//	};
+	private final String name = "test.bin";
+	private final String description = "Test Network";
+ 	private final String[][] shapes = new String[][] {
+		{
+				"****",
+				"....",
+				"....",
+				"...."
+		},
+		{
+				"....",
+				"****",
+				"....",
+				"...."
+		}
+	};
 		
 	private NTupleNetwork network;
 //	private NTupleNetwork simpleNetwork = new NTupleNetwork(simple, "Side-learn Simple");
@@ -134,7 +134,7 @@ public class SimpleLearn3 implements Evaluator {
 //				e.printStackTrace();
 //			}
 //		}
-//		learn();
+		learn();
 	}
 	
 	private void learn() {
@@ -225,7 +225,7 @@ public class SimpleLearn3 implements Evaluator {
 
 	
 	private int[] learningGame(double learningRate) {
-		FastState game = new FastState();
+		BinaryState game = new BinaryState();
 		List<MOVE> moves = game.getMoves();
 		while (!moves.isEmpty()) {
 			char[] halfMoveBoard = new char[4];
@@ -287,13 +287,13 @@ public class SimpleLearn3 implements Evaluator {
 		return (char) (((row & 0xF) << 12) | ((row & 0xF0) << 4) | ((row & 0xF00) >> 4) | ((row & 0xF000) >> 12));
 	}
 
-	private double getBestValueAction(FastState game, List<MOVE> moves) {
+	private double getBestValueAction(BinaryState game, List<MOVE> moves) {
 		double bestScore = Double.NEGATIVE_INFINITY;
 		char[] board = game.getBoard();
 		for(MOVE move : moves) {
 			char[] newBoard = new char[4];
 			int reward = game.slide2(move, board, newBoard);
-			double result = reward + evaluate(newBoard) + rollout(newBoard);
+			double result = reward + evaluate(newBoard);// + rollout(newBoard);
 			if(result > bestScore) {
 				bestScore = result;
 			}
@@ -303,7 +303,7 @@ public class SimpleLearn3 implements Evaluator {
 
 	private int rollout(char[] newBoard) {
 		Random rng = new Random();
-		FastState game = new FastState();
+		BinaryState game = new BinaryState();
 		long state = 0;
 		for (int i = 0 ; i < 4 ; i++) {
 			state |= ((long)(newBoard[i])) << (i * 16);
@@ -320,7 +320,7 @@ public class SimpleLearn3 implements Evaluator {
 	}
 
 
-	private MOVE getBestMove(FastState game, List<MOVE> moves, char[] halfMoveBoard) {
+	private MOVE getBestMove(BinaryState game, List<MOVE> moves, char[] halfMoveBoard) {
 		double bestScore = Double.NEGATIVE_INFINITY;
 		MOVE bestMove = null;
 		char[] board = game.getBoard();
