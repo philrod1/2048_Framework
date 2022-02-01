@@ -57,7 +57,7 @@ public class Plot extends JPanel {
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
 		double scaleX = (double)getWidth() / maxX;
-		double scaleY = (double)getHeight() / maxY;
+		double scaleY = (double)getHeight() / 200;
 		
 		for (int i = 0 ; i < steps ; i++) {
 			
@@ -70,11 +70,20 @@ public class Plot extends JPanel {
 				return;
 			}
 			int x = (int)(t.i * scaleX);
-			int y = (int) (getHeight() * 2 - ((Math.sqrt(t.s)) * scaleY)) / 2;
-			img.setRGB(x, y, colours[t.h].getRGB());
+			System.out.println(t);
+			System.out.println(Math.log(t.a) + " ... " + Math.sqrt(t.a));
+			int y = (int) (((Math.log(t.s) * Math.log(t.s)) * scaleY));
+			try {
+				img.setRGB(x, getHeight() - y, colours[t.h].getRGB());
+			} catch (ArrayIndexOutOfBoundsException e) {
+				System.out.println("Bounds: " + getWidth() + ", " + getHeight());
+				System.out.println("Point " + x + ", " + y);
+				e.printStackTrace();
+
+			}
 			
 			x = (int)(t.i * scaleX);
-			y = (int) (getHeight() * 2 - ((Math.sqrt(t.a)) * scaleY)) / 2;
+			y = getHeight() - ((int) (((Math.log(t.a) * Math.log(t.a)) * scaleY)));
 			int c = Color.YELLOW.getRGB();
 			img.setRGB(x, y, c);
 			img.setRGB(x+1, y, c);
@@ -86,8 +95,8 @@ public class Plot extends JPanel {
 		g2.dispose();
 		g.dispose();
 	}
-	public void addPoint(int a1, int a2, int highTile) {
-		tuples[count % steps] = new Tuple(i++, highTile, a1, a2);
+	public void addPoint(int score, int average, int highTile) {
+		tuples[count % steps] = new Tuple(i++, highTile, score, average);
 		count++;
 		if (count % steps == 0) {
 			repaint();
@@ -101,6 +110,9 @@ public class Plot extends JPanel {
 			this.h = h;
 			this.s = s;
 			this.a = a;
+		}
+		public String toString() {
+			return i + " " + h + " " + s + " " + a;
 		}
 	}
 }

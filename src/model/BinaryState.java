@@ -335,13 +335,13 @@ public class BinaryState extends AbstractState {
 	public void bump() {
 		super.reset();
 		board = new char[4];
-		fromLong(0xabcdl);
+		fromLong(0xabcdL);
 		highTile = 0xd;
 		for (int i = 0; i < N_START_TILES; i++) {
 			addRandomTile();
 		}
 		score = 0;
-		score = LongInfo.approxScore(0xabcdl);
+		score = LongInfo.approxScore(0xabcdL);
 	}
 
 	private void setValue(int x, int y, int i) {

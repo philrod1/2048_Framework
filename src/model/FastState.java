@@ -273,4 +273,10 @@ public class FastState extends AbstractState {
 
         return score2 - score1;
     }
+
+    public FastState copy() {
+        FastState copy = new FastState();
+        copy.board = this.board;
+        return copy;
+    }
 }

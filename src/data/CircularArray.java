@@ -2,8 +2,7 @@ package data;
 
 public class CircularArray {
 
-	private int index = -1;
-	private boolean full = false;
+	private int index = 0;
 	private final int[] array;
 	private final int size;
 	
@@ -13,25 +12,20 @@ public class CircularArray {
 	}
 	
 	public void add(int value) {
+		array[index % size] = value;
 		index++;
-		if(index >= size) {
-			full = true;
-			index = 0;
-		}
-		array[index] = value;
 	}
 	
 	public int average() {
-		int sum = 0;
-		int end = full ? size : index+1;
+		long sum = 0;
+		int end = Math.min(index, size);
 		for(int i = 0 ; i < end ; i++) {
 			sum += array[i];
 		}
-		return sum / end;
+		return (int) (sum / end);
 	}
 
 	public void clear() {
-		full = false;
-		index = -1;
+		index = 0;
 	}
 }

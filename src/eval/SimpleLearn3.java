@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import data.NTupleNetwork;
 import model.AbstractState.MOVE;
 import model.BinaryState;
+import model.FastState;
 import model.State;
 import data.CircularArray;
 import data.Plot;
@@ -28,8 +29,8 @@ public class SimpleLearn3 implements Evaluator {
 //  private final String name = "beast-mode2.bin";
 //	private final String description = "Beast Mode 2 Network";
 
-//  private final String name = "matsuzaki.bin";
-//	private final String description = "Beast Mode Network";
+  private final String name = "matsuzaki.bin";
+	private final String description = "Beast Mode Network";
 
 //	private final String name = "simple-side.bin";
 //	private final String description = "Simple Side Network";
@@ -87,22 +88,22 @@ public class SimpleLearn3 implements Evaluator {
 //				".**.",
 //		}
 //	};
-	private final String name = "test.bin";
-	private final String description = "Test Network";
- 	private final String[][] shapes = new String[][] {
-		{
-				"****",
-				"....",
-				"....",
-				"...."
-		},
-		{
-				"....",
-				"****",
-				"....",
-				"...."
-		}
-	};
+//	private final String name = "test.bin";
+//	private final String description = "Test Network";
+// 	private final String[][] shapes = new String[][] {
+//		{
+//				"****",
+//				"....",
+//				"....",
+//				"...."
+//		},
+//		{
+//				"....",
+//				"****",
+//				"....",
+//				"...."
+//		}
+//	};
 		
 	private NTupleNetwork network;
 //	private NTupleNetwork simpleNetwork = new NTupleNetwork(simple, "Side-learn Simple");
@@ -138,7 +139,7 @@ public class SimpleLearn3 implements Evaluator {
 	}
 	
 	private void learn() {
-		int nGames = 2000000;
+		int nGames = 1000000;
 		Plot plot = new Plot(nGames, 1200, 900);
 		JFrame frame = new JFrame("Plot.");
 		frame.getContentPane().add(plot);
@@ -152,8 +153,11 @@ public class SimpleLearn3 implements Evaluator {
 			if (i % 10000 == 0) {
 				save();
 			}
-			int[] r = learningGame(0.0001);
+			int[] r = learningGame(0.00002);
 			stats.add(r[0]);
+			if (stats.average() < 0) {
+				System.err.println(r[0] + " " + r[1] + " " + stats.average());
+			}
 			plot.addPoint(r[0], stats.average(), r[1]);
 		}
 		save();
@@ -162,6 +166,9 @@ public class SimpleLearn3 implements Evaluator {
 	private static final ExecutorService exec = Executors.newSingleThreadExecutor();
 	private void save() {
 		System.out.println("Saving");
+//		if (true) {
+//			return;
+//		}
 //		exec.submit(() -> {
 			try (OutputStream file = new FileOutputStream(name);
 				 OutputStream buffer = new BufferedOutputStream(file);
@@ -225,7 +232,7 @@ public class SimpleLearn3 implements Evaluator {
 
 	
 	private int[] learningGame(double learningRate) {
-		BinaryState game = new BinaryState();
+		FastState game = new FastState();
 		List<MOVE> moves = game.getMoves();
 		while (!moves.isEmpty()) {
 			char[] halfMoveBoard = new char[4];
@@ -287,13 +294,13 @@ public class SimpleLearn3 implements Evaluator {
 		return (char) (((row & 0xF) << 12) | ((row & 0xF0) << 4) | ((row & 0xF00) >> 4) | ((row & 0xF000) >> 12));
 	}
 
-	private double getBestValueAction(BinaryState game, List<MOVE> moves) {
+	private double getBestValueAction(FastState game, List<MOVE> moves) {
 		double bestScore = Double.NEGATIVE_INFINITY;
 		char[] board = game.getBoard();
 		for(MOVE move : moves) {
 			char[] newBoard = new char[4];
 			int reward = game.slide2(move, board, newBoard);
-			double result = reward + evaluate(newBoard);// + rollout(newBoard);
+			double result = reward + evaluate(newBoard);
 			if(result > bestScore) {
 				bestScore = result;
 			}
@@ -320,18 +327,18 @@ public class SimpleLearn3 implements Evaluator {
 	}
 
 
-	private MOVE getBestMove(BinaryState game, List<MOVE> moves, char[] halfMoveBoard) {
+	private MOVE getBestMove(FastState game, List<MOVE> moves, char[] halfMoveBoard) {
 		double bestScore = Double.NEGATIVE_INFINITY;
 		MOVE bestMove = null;
 		char[] board = game.getBoard();
-		for(MOVE move : moves) {
+		for (MOVE move : moves) {
 			char[] newBoard = new char[4];
 			int reward = game.slide2(move, board, newBoard);
 			double result = reward + evaluate(newBoard);
-			if(result > bestScore) {
+			if (result > bestScore) {
 				bestScore = result;
 				bestMove = move;
-				for (int i = 0 ; i < 4 ; i++) {
+				for (int i = 0; i < 4; i++) {
 					halfMoveBoard[i] = newBoard[i];
 				}
 			}
